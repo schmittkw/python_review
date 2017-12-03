@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Flask Intro</title>
 </head>
 <body>
 
-
     <h1>{{ gucci }}</h1>
+
+    <form action="/process" method='post'>
+        <label for="number">Favorite Number:</label>
+        <input type="number" name='number'>
+
+        <button type='submit'>Send number</button>
+    </form>
 
 
 

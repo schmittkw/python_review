@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dojo Survey</title>
+</head>
+<body>
+    <h1>Welcome</h1>
+    <h3>{{ gucci }}</h3>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class='flashes' >
+                {% for message in messages %}
+                    <li style='color:red'>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/process" method='post'>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name='name'>
+        </div>
+        <div>
+            <label for="location">Location:</label>
+            <select name='location'>
+                <option value='' selected>--Select--</option>
+                <option value="Dallas">Dallas</option>
+                <option value="San Jose">San Jose</option>            
+                <option value="Seattle">Seattle</option>            
+            </select>
+        </div>
+        <div>
+            <label for="language">Language:</label>
+            <select name='language'>
+                <option value='' selected>--Select--</option>                
+                <option value="C#">C#</option>
+                <option value="Python">Python</option>          
+                <option value="JavaScript">JavaScript</option>          
+            </select>
+        </div>
+        <div>
+            <label for="comment">Comment:</label>
+            <textarea name="comment" cols="30" rows="7"></textarea>
+        </div>
+        <div>
+            <button type='submit'>Submit</button>
+        </div>
+    </form>
+
+
+
+
+
+</body>
+</html>

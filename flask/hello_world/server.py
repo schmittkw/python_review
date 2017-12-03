@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
@@ -12,7 +12,14 @@ def index():
 def dashboard():
     pass
 
+@app.route('/process', methods=['POST'])
+def process():
+    if int(request.form['number']) == 10:
+        print "It equals 10"
+    else:
+        print "no it don't"
 
+    return redirect("/")
 
 
 
