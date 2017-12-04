@@ -48,6 +48,15 @@
             </div>
         </form>
     </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class='flashes' >
+                {% for message in messages %}
+                    <li style='color:red'>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <!-- display all users -->
     <h2>All Users</h2>
     <table>

@@ -5,7 +5,7 @@ import md5, os, binascii
 app = Flask(__name__)
 app.secret_key = 'mykeysecret'
 # connect and store the connection in "mysql"; note that you pass the database name to the function
-mysql = MySQLConnector(app, 'new_wall')
+mysql = MySQLConnector(app, 'newer_wall')
 # an example of running a query
 def get_current_user():
     user_query = "SELECT * FROM users WHERE users.id = :user_id LIMIT 1"
@@ -97,13 +97,100 @@ def dashboard():
         id = session['id']
         email = session['email']
 
-        return render_template('dashboard.html', first_name=first_name, last_name=last_name, email=email, id=id)
+        query = "SELECT users.id as message_user_pk, users.first_name as message_user_first_name, users.last_name as message_user_last_name, messages.id as message_pk, messages.message, messages.updated_at as message_timestamp, comments.id as comment_pk, comments.message_id, comments.comment, comments.updated_at as comment_timestamp, users2.id as comment_user_pk, users2.first_name as comment_user_first_name, users2.last_name as comment_user_last_name FROM users LEFT JOIN messages ON users.id = messages.user_id LEFT JOIN comments ON messages.id = comments.message_id LEFT JOIN users as users2 ON users2.id = comments.user_id;"
+
+        messages = mysql.query_db(query)
+        new_messages = []
+
+        message_ids = []
+        
+        for message in messages:
+            if message['message_pk'] not in message_ids:
+                message_ids.append(message['message_pk'])
+                myMsgObj = {
+                    'pk': message['message_pk'],
+                    'message': message['message'],
+                    'user_first_name': message['message_user_first_name'],
+                    'user_last_name': message['message_user_last_name'],
+                    'timestamp': message['message_timestamp'],
+                    'comments': []
+                }
+                if message['comment_pk'] != None:
+                    #create a comment obj
+                    myCommentObj = {
+                        'pk' : message['comment_pk'],
+                        'user_first_name' : message['comment_user_first_name'],
+                        'user_last_name' : message['comment_user_last_name'],
+                        'comment' : message['comment'],
+                        'timestamp' : message['comment_timestamp']
+                    }
+                    myMsgObj['comments'].append(myCommentObj)
+                new_messages.append(myMsgObj)
+            else:
+                #just want to extract the comment                
+                myCommentObj = {
+                    'pk' : message['comment_pk'],
+                    'user_first_name' : message['comment_user_first_name'],
+                    'user_last_name' : message['comment_user_last_name'],
+                    'comment' : message['comment'],
+                    'timestamp' : message['comment_timestamp']
+                }
+                new_messages[-1]['comments'].append(myCommentObj)
+
+
+        # message = {
+        #     'pk': 1,
+        #     'user_name': 'Cody',
+        #     'message' : 'my Message',
+        #     'comments': [
+        #         {
+        #             'pk' : 1,
+        #             'user_name', 'Cody'
+        #             'comment': 'My first Comment'
+        #         },
+        #         {
+        #             'pk' : 2,
+        #             'user_name', 'Cody'
+        #             'comment': 'My second Comment'
+        #         },
+        #     ]
+        # }
+
+        return render_template('dashboard.html', messages=new_messages, first_name=first_name, last_name=last_name, email=email, id=id)
 
 @app.route('/logout')
 def logout():
     session.clear()
     session['is_logged_in'] = False
     return redirect("/")
+
+@app.route('/messages', methods=['POST'])
+def messages():
+    if request.form['message'] == '':
+        flash('Message cannot be blank')
+        return redirect('/dashboard')
+    else:
+        query = 'insert into messages (message, user_id, created_at, updated_at) values (:message, :user_id, now(), now())'
+        data = {
+            'message': request.form['message'],
+            'user_id': session['id']
+        }
+        mysql.query_db(query, data)
+        return redirect('/dashboard')
+
+@app.route('/comments', methods=['POST'])
+def comment():
+    if request.form['comment'] == '':
+        flash('Comment cannot be blank')
+        return redirect('/dashboard')
+    query = 'INSERT INTO comments (comment, message_id, user_id, created_at, updated_at) VALUES (:comment, :message_id, :user_id, NOW(), NOW())'
+    data = {
+        'comment' : request.form['comment'],
+        'message_id' : request.form['message_id'],
+        'user_id' : session['id']
+    }
+    mysql.query_db(query, data)
+    return redirect('/dashboard')
 
 
 

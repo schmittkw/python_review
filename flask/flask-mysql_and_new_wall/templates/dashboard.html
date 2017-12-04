@@ -21,17 +21,74 @@
         <form action="/messages" method='post'>
             <div>
                 <label for="message">Message</label>
-                <textarea name="message" cols="20" rows="4"></textarea>
+                <textarea name="message" cols="25" rows="4"></textarea>
             </div>
             <button type='submit'>Post Message</button>
         </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class='flashes' >
+                    {% for message in messages %}
+                        <li style='color:red'>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
 
-
+    <!-- <div>
     {% for message in messages %}
-
-
+        <div>
+            <h4>{{ message['first_name'] }} {{ message['last_name'] }} - {{ message['updated_at'] }}</h4>
+            <p>{{ message['message'] }}</p>
+            <div class="new_comment">
+                <form action="/comment" method='post'>
+                    <input type="hidden" name="message_id" value="{{ message['message_pk'] }}">
+                    <div>
+                        <label for="comment">Comment</label>
+                        <textarea name="comment" cols="20" rows="2"></textarea>
+                    </div>
+                    <button type='submit'>Leave Comment</button>
+                </form>
+            </div>
+        </div>
     {% endfor %}
+    </div> -->
+    <div class="messages">
+        {% for message in messages %}
+            <div>
+                <h5>{{ message['user_first_name'] }} {{ message['user_last_name'] }} - {{ message['timestamp'] }}</h5>
+                <h3 class="message_text">{{ message['message'] }}</h3>
+            </div>
+            {% for comment in message['comments'] %}
+                <div class="comments" style='margin-left: 40px;'>
+                    <p>{{ comment['user_first_name'] }} {{ comment['user_last_name'] }} - {{  comment['timestamp'] }}</p>
+                    <h4 class="message_text">{{ comment['comment'] }}</h4>
+                </div>
+            {% endfor %}
+            <div style='margin-left: 40px;'>
+                <form action="/comments" method="post">
+                    <input type="hidden" name="message_id" value="{{ message['pk'] }}">
+                    <div>
+                        <label>Post a Comment</label>
+                    </div>
+                    <div>
+                        <textarea name="comment" rows="3"></textarea>
+                    </div>
+                    <div>
+                        <input type="submit" class="create_button" value="Post a Comment">
+                    </div>
+                </form>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for error in messages %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endfor %}
+    </div>
 
 </body>
 </html>
