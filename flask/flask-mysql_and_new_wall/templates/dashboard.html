@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>CodingDojo Wall</h1>
+    <h3>Welcome, {{ first_name }} {{ last_name }}</h3>
+    <p>ID: {{ id }}</p>
+    <p>Email: {{ email }}</p>
+
+    <form action="/logout">
+        <button type='submit'>Logout</button>
+    </form>
+    <a href="/logout">Logout</a>
+    <hr>
+    <div>
+        <form action="/messages" method='post'>
+            <div>
+                <label for="message">Message</label>
+                <textarea name="message" cols="20" rows="4"></textarea>
+            </div>
+            <button type='submit'>Post Message</button>
+        </form>
+    </div>
+
+
+    {% for message in messages %}
+
+
+    {% endfor %}
+
+</body>
+</html>
